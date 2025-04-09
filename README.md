@@ -9,15 +9,15 @@ Développé avec React + Tailwind, parce que le style, c’est important.
 - Section à propos avec contenu inspiré de l’office du tourisme
 - Boutique avec billets Solo / Duo / Famille
 - Panier, Connexion et navigation stylée
-- Footer avec réseaux sociaux (le strict minimum pour être crédible)
-
+- Footer avec réseaux sociaux
+  
 ## 🛠️ Stack technique
 
 - React
 - Vite
 - Tailwind CSS
 - Font Awesome (ou HeroIcons selon ton mood)
-- Git (parce qu’on est en 2024, pas en 1995)
+- Git 
 
 ## 📦 Installation
 
