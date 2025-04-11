@@ -1,4 +1,5 @@
 import heroImage from '../assets/img-hero-homepage.jpg'; // Vérifie le chemin et le nom
+import { Link } from 'react-router-dom';
 
 export default function Hero() {
     return (
@@ -18,9 +19,15 @@ export default function Hero() {
 
                 {/* Bouton en bas à droite */}
                 <div className="absolute bottom-6 right-6 z-50">
-                    <button className="relative bg-[#e0d2b9] text-gray-800 px-6 py-2 rounded-full shadow hover:shadow-lg transition">
+                    {/*<button className="relative bg-[#e0d2b9] text-gray-800 px-6 py-2 rounded-full shadow hover:shadow-lg transition">
                         Voir les offres
-                    </button>
+                    </button>*/}
+                    <Link
+                        to="/boutique"
+                        className="relative bg-[#e0d2b9] text-gray-800 px-6 py-2 rounded-full shadow hover:shadow-lg transition"
+                    >
+                        Voir les offres
+                    </Link>
 
 
                 </div>
