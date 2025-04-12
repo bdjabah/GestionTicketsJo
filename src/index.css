@@ -6,3 +6,8 @@
   margin: 0 !important;
   text-align: left !important;
 }
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
