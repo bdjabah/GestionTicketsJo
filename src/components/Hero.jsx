@@ -1,6 +1,12 @@
 import heroImage from '../assets/img-hero-homepage.jpg'; // Vérifie le chemin et le nom
+import { useNavigate } from 'react-router-dom';
 
 export default function Hero() {
+    const navigate = useNavigate();
+
+    const goToBoutique = () => {
+        navigate('/boutique');
+    };
     return (
         <section className="relative mt-20 px-2 sm:px-4 lg:px-6">
             <div className="relative rounded-lg overflow-hidden shadow-lg">
@@ -18,7 +24,10 @@ export default function Hero() {
 
                 {/* Bouton en bas à droite */}
                 <div className="absolute bottom-6 right-6 z-50">
-                    <button className="relative bg-[#e0d2b9] text-gray-800 px-6 py-2 rounded-full shadow hover:shadow-lg transition">
+                    <button
+                        onClick={goToBoutique}
+                        className="relative bg-[#e0d2b9] text-gray-800 px-6 py-2 rounded-full shadow hover:shadow-lg transition"
+                    >
                         Voir les offres
                     </button>
 

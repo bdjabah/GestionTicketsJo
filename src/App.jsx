@@ -5,26 +5,33 @@ import About from './components/About.jsx';
 import Hero from './components/Hero.jsx';
 import Sports from './components/Sports.jsx';
 import Boutique from './components/Boutique.jsx';
+import TicketForm from './components/TicketForm';
+import Panier from './components/Panier.jsx';
 
 function App() {
   return (
     <Router>
-      <div className="bg-[#f4ede4] min-h-screen">
+      <div className="flex flex-col min-h-screen">
         <Header />
 
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <>
-                <Hero />
-                <About />
-                <Sports />
-              </>
-            }
-          />
-          <Route path="/boutique" element={<Boutique />} />
-        </Routes>
+        <main className="flex-grow overflow-hidden sm:overflow-auto bg-[#f4ede4]">
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <>
+                  <Hero />
+                  <About />
+                  <Sports />
+                </>
+              }
+            />
+            <Route path="/boutique" element={<Boutique />} />
+            <Route path="/ticket/:type" element={<TicketForm />} />
+            <Route path="/ticket/:type/edit" element={<TicketForm />} />
+            <Route path="/panier" element={<Panier />} />
+          </Routes>
+        </main>
 
         <Footer />
       </div>
