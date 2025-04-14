@@ -11,6 +11,10 @@ export default function Panier() {
         return acc;
     }, {});
 
+    const handleLogin = () => {
+        navigate("/connexion");
+    };
+
     const typeLabels = {
         solo: 'Tickets Solo',
         duo: 'Tickets Duo',
@@ -133,7 +137,7 @@ export default function Panier() {
                                 <span>{totalAPayer.toFixed(2)} €</span>
                             </div>
 
-                            <button className="mt-6 w-full bg-[#d9c275] text-white py-2 rounded hover:opacity-90 transition">
+                            <button onClick={handleLogin} className="mt-6 w-full bg-[#d9c275] text-white py-2 rounded hover:opacity-90 transition">
                                 Procéder au paiement
                             </button>
 
