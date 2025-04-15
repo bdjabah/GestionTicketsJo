@@ -8,7 +8,7 @@ export default function Hero() {
         navigate('/boutique');
     };
     return (
-        <section className="relative mt-20 px-2 sm:px-4 lg:px-6">
+        <section className="relative mt-2 px-2 sm:px-4 lg:px-6">
             <div className="relative rounded-lg overflow-hidden shadow-lg">
                 <img
                     src={heroImage}

@@ -9,6 +9,7 @@ import TicketForm from './components/TicketForm';
 import Panier from './components/Panier.jsx';
 import Connexion from './components/Connexion.jsx'
 import Paiement from './components/Paiement.jsx';
+import Inscription from './components/Inscription.jsx';
 
 function App() {
   return (
@@ -16,7 +17,7 @@ function App() {
       <div className="flex flex-col min-h-screen">
         <Header />
 
-        <main className="flex-grow overflow-hidden sm:overflow-auto bg-[#f4ede4]">
+        <main className="flex-1 overflow-hidden sm:overflow-auto bg-[#f4ede4] pt-16">
           <Routes>
             <Route
               path="/"
@@ -33,6 +34,7 @@ function App() {
             <Route path="/ticket/:type/edit" element={<TicketForm />} />
             <Route path="/panier" element={<Panier />} />
             <Route path="/connexion" element={<Connexion />} />
+            <Route path="/inscription" element={<Inscription />} />
             <Route path="/paiement" element={<Paiement />} />
           </Routes>
         </main>

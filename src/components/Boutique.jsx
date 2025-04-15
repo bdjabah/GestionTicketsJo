@@ -50,7 +50,7 @@ function Card({ title, subtitle, price, image, link }) {
 
 export default function OfferPage() {
     return (
-        <div className="flex flex-col items-center justify-center min-h-[calc(100vh-200px)] px-6 pt-32">
+        <div className="flex flex-col items-center justify-center min-h-[calc(100vh-200px)] px-6">
             <div className="max-w-7xl w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
                 {offers.map((offer, index) => (
                     <Card key={index} {...offer} />

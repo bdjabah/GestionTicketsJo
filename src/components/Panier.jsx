@@ -37,7 +37,7 @@ export default function Panier() {
     const navigate = useNavigate();
 
     return (
-        <div className="pt-32 pb-20 px-6 sm:px-16 md:px-24 bg-[#f4ede4] min-h-screen">
+        <div className="min-h-[calc(100vh-200px)] px-6 pt-16">
             <h2 className="text-4xl font-bold mb-10 text-center">🛒 Votre panier</h2>
 
             {panier.length === 0 ? (
