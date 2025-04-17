@@ -18,7 +18,7 @@ export default function Connexion() {
                 {/* Back button */}
                 <button
                     onClick={() => navigate(-1)}
-                    className="mb-4 w-10 px-3 h-10 rounded-full bg-[#d9c275] text-black text-lg flex items-center justify-center mr-auto"
+                    className="mb-2 w-10 px-3 h-10 rounded-full bg-[#d9c275] text-black text-lg flex items-center justify-center mr-auto"
                 >
                     ←
                 </button>
@@ -40,6 +40,14 @@ export default function Connexion() {
                     <button className="w-1/2 mx-auto  flex justify-center items-center bg-[#d9c275] text-white py-2 rounded hover:opacity-90 transition">
                         Je me connecte
                     </button>
+                    <div className="w-full text-right mt-2">
+                        <a
+                            href="/reset-password"
+                            className="text-sm text-blue-600 hover:underline"
+                        >
+                            Mot de passe oublié ?
+                        </a>
+                    </div>
                 </div>
 
                 {/* Divider */}
