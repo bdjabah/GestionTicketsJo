@@ -1,4 +1,4 @@
-// src/pages/OfferPage.jsx
+// src/pages/Boutique.jsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import solo from '../assets/img-ticket-solo.png';

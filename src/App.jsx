@@ -7,6 +7,10 @@ import Sports from './components/Sports.jsx';
 import Boutique from './components/Boutique.jsx';
 import TicketForm from './components/TicketForm';
 import Panier from './components/Panier.jsx';
+import Connexion from './components/Connexion.jsx'
+import Paiement from './components/Paiement.jsx';
+import Inscription from './components/Inscription.jsx';
+import UserAccount from './components/UserAccount';
 
 function App() {
   return (
@@ -30,6 +34,10 @@ function App() {
             <Route path="/ticket/:type" element={<TicketForm />} />
             <Route path="/ticket/:type/edit" element={<TicketForm />} />
             <Route path="/panier" element={<Panier />} />
+            <Route path="/connexion" element={<Connexion />} />
+            <Route path="/inscription" element={<Inscription />} />
+            <Route path="/paiement" element={<Paiement />} />
+            <Route path="/moncompte" element={<UserAccount />} />
           </Routes>
         </main>
 

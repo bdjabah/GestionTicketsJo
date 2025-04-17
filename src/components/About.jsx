@@ -1,3 +1,4 @@
+//src/components/About.jsx
 export default function Hero() {
     return (
         <section className="relative z-20 -mt-12 pb-6 -mb-12 flex justify-center px-4 sm:px-6 md:px-10">

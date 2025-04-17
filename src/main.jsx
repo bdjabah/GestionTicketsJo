@@ -4,14 +4,16 @@ import './index.css'
 import App from './App.jsx'
 import { PanierProvider } from './context/PanierContext.jsx';
 import { TicketEditProvider } from './context/TicketEditContext';
+import { AuthProvider } from './context/AuthContext.jsx';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <PanierProvider>
-      <TicketEditProvider>
-        <App />
-      </TicketEditProvider>
-    </PanierProvider>
-
+    <AuthProvider>
+      <PanierProvider>
+        <TicketEditProvider>
+          <App />
+        </TicketEditProvider>
+      </PanierProvider>
+    </AuthProvider>
   </React.StrictMode>
 );

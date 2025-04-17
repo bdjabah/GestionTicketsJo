@@ -1,3 +1,4 @@
+//src/components/hero.jsx
 import heroImage from '../assets/img-hero-homepage.jpg'; // Vérifie le chemin et le nom
 import { useNavigate } from 'react-router-dom';
 

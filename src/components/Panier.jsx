@@ -4,12 +4,19 @@ import { useNavigate } from 'react-router-dom';
 
 export default function Panier() {
     const { panier, resetPanier, removeFromPanier } = usePanier();
+    const { setTicketToEdit, setEditIndex } = useTicketEdit();
+    const navigate = useNavigate(); // 🔁 position corrigée ici
 
     const groupedTickets = panier.reduce((acc, ticket) => {
         if (!acc[ticket.type]) acc[ticket.type] = [];
         acc[ticket.type].push(ticket);
         return acc;
     }, {});
+
+    // ✅ CHANGEMENT ICI : ajout du paramètre redirect
+    const handleLogin = () => {
+        navigate("/connexion?redirect=/paiement");
+    };
 
     const typeLabels = {
         solo: 'Tickets Solo',
@@ -29,11 +36,9 @@ export default function Panier() {
 
     const taxes = prixTotal * 0.05;
     const totalAPayer = prixTotal + taxes;
-    const { setTicketToEdit, setEditIndex } = useTicketEdit();
-    const navigate = useNavigate();
 
     return (
-        <div className="pt-32 pb-20 px-6 sm:px-16 md:px-24 bg-[#f4ede4] min-h-screen">
+        <div className="min-h-[calc(100vh-200px)] px-24 pt-16 mt-4">
             <h2 className="text-4xl font-bold mb-10 text-center">🛒 Votre panier</h2>
 
             {panier.length === 0 ? (
@@ -63,7 +68,6 @@ export default function Panier() {
 
                                 <div className="flex flex-wrap justify-center gap-6 mt-4">
                                     {tickets.map((ticket, idx) => {
-                                        // Trouver l'index global dans le panier
                                         const globalIndex = panier.findIndex(
                                             (t) =>
                                                 t.nom === ticket.nom &&
@@ -133,7 +137,8 @@ export default function Panier() {
                                 <span>{totalAPayer.toFixed(2)} €</span>
                             </div>
 
-                            <button className="mt-6 w-full bg-[#d9c275] text-white py-2 rounded hover:opacity-90 transition">
+                            {/* ✅ Bouton mis à jour ici */}
+                            <button onClick={handleLogin} className="mt-6 w-full bg-[#d9c275] text-white py-2 rounded hover:opacity-90 transition">
                                 Procéder au paiement
                             </button>
 

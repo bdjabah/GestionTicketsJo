@@ -5,17 +5,22 @@ import {
     ShoppingCartIcon,
     UserCircleIcon,
 } from '@heroicons/react/24/solid';
-import { Link } from 'react-router-dom'; // ⬅️ pour les liens React
+import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext'; // ← ajout ici
 import logo from '../assets/logo-jo.png';
 
 export default function Header() {
     const [menuOpen, setMenuOpen] = useState(false);
+    const { user } = useAuth(); // ← récupération de l'utilisateur
 
+    // ⬇️ On adapte les liens selon l'état de connexion
     const navItems = [
         { label: 'Accueil', icon: <HomeIcon className="w-5 h-5" />, to: '/' },
         { label: 'Boutique', icon: <ShoppingBagIcon className="w-5 h-5" />, to: '/boutique' },
         { label: 'Panier', icon: <ShoppingCartIcon className="w-5 h-5" />, to: '/panier' },
-        { label: 'Connexion', icon: <UserCircleIcon className="w-5 h-5" />, to: '/login' },
+        user
+            ? { label: 'Mon compte', icon: <UserCircleIcon className="w-5 h-5" />, to: '/mon-compte' }
+            : { label: 'Connexion', icon: <UserCircleIcon className="w-5 h-5" />, to: '/connexion' },
     ];
 
     return (
@@ -33,7 +38,7 @@ export default function Header() {
                     <span className="text-lg font-bold text-gray-800">JO 2024</span>
                 </Link>
 
-                {/* Menu desktop à droite */}
+                {/* Menu desktop */}
                 <nav className="hidden md:flex gap-8 text-sm font-medium">
                     {navItems.map((item) => (
                         <Link
@@ -77,14 +82,14 @@ export default function Header() {
                 </button>
             </div>
 
-            {/* Menu mobile déroulant */}
+            {/* Menu mobile */}
             {menuOpen && (
                 <div className="md:hidden bg-white px-6 pb-4 flex flex-col gap-4 text-sm font-medium text-black shadow">
                     {navItems.map((item) => (
                         <Link
                             key={item.label}
                             to={item.to}
-                            onClick={() => setMenuOpen(false)} // ⬅️ Ferme le menu au clic
+                            onClick={() => setMenuOpen(false)}
                             className="flex items-center gap-2 hover:text-gray-700 transition"
                         >
                             {item.icon}
