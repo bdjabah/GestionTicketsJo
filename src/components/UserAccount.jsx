@@ -5,7 +5,11 @@ export default function UserAccount() {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
 
-    // Si pas connecté, on redirige gentiment vers /connexion
+    // Vérifier les achats stockés localement
+    const achats = JSON.parse(localStorage.getItem("achats")) || [];
+    const mesAchats = achats.filter(a => a.email === user?.email);
+
+    // Redirection si l'utilisateur n'est pas connecté
     if (!user) {
         return (
             <div className="p-8 text-center">
@@ -34,12 +38,29 @@ export default function UserAccount() {
                 </p>
             )}
 
+
+
+            <div className="mt-10">
+                <h3 className="text-xl font-bold mb-4">🧾 Historique des billets</h3>
+                {mesAchats.length === 0 ? (
+                    <p className="text-gray-500">Aucun billet acheté pour le moment.</p>
+                ) : (
+                    <ul className="text-sm text-gray-800 space-y-4">
+                        {mesAchats.map((achat, index) => (
+                            <li key={index} className="border p-4 rounded shadow-sm">
+                                <p><strong>Date :</strong> {new Date(achat.date).toLocaleString()}</p>
+                                <p className="break-all"><strong>Clé billet :</strong> {achat.qr}</p>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </div>
             <button
                 onClick={() => {
                     logout();
                     navigate("/");
                 }}
-                className="mt-6 bg-red-100 text-red-800 px-6 py-2 rounded hover:bg-red-200"
+                className="mt-6 bg-[#d9c275] px-6 py-2 rounded hover:bg-red-200"
             >
                 Se déconnecter
             </button>

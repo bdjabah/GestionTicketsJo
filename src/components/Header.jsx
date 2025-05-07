@@ -19,7 +19,7 @@ export default function Header() {
         { label: 'Boutique', icon: <ShoppingBagIcon className="w-5 h-5" />, to: '/boutique' },
         { label: 'Panier', icon: <ShoppingCartIcon className="w-5 h-5" />, to: '/panier' },
         user
-            ? { label: 'Mon compte', icon: <UserCircleIcon className="w-5 h-5" />, to: '/mon-compte' }
+            ? { label: 'Mon compte', icon: <UserCircleIcon className="w-5 h-5" />, to: '/moncompte' }
             : { label: 'Connexion', icon: <UserCircleIcon className="w-5 h-5" />, to: '/connexion' },
     ];
 

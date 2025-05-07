@@ -13,25 +13,49 @@ export default function Connexion() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setError("");
 
-        const savedUser = JSON.parse(localStorage.getItem("user"));
+        try {
+            // 🔐 Appel réel au backend pour se connecter
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    email: email,
+                    motDePasse: password, // ← Doit correspondre au DTO backend
+                }),
+            });
 
-        if (!savedUser || savedUser.email !== email) {
-            setError("Utilisateur non trouvé.");
-            return;
+            if (!res.ok) {
+                const msg = await res.text();
+                setError(msg || "Échec de la connexion.");
+                return;
+            }
+
+            const data = await res.json();
+            const token = data.token;
+
+            if (!token) {
+                setError("Token manquant dans la réponse.");
+                return;
+            }
+
+            // ✅ Appelle le contexte Auth pour enregistrer le token et charger l'utilisateur
+            await login(token);
+
+            // ✅ Redirection : on récupère la valeur "redirect" dans l'URL si elle existe
+            const redirectTo = new URLSearchParams(location.search).get("redirect");
+
+            // ⛳ On redirige vers la page demandée, sinon vers la page d’accueil
+            navigate(redirectTo || '/');
+        } catch (err) {
+            console.error(err);
+            setError("Erreur lors de la tentative de connexion.");
         }
-
-        // Authentification simulée
-        login(email);
-
-        // ✅ Redirection : on récupère la valeur "redirect" dans l'URL si elle existe
-        const redirectTo = new URLSearchParams(location.search).get('redirect');
-
-        // ⛳ On redirige vers la page demandée, sinon vers la page d’accueil
-        navigate(redirectTo || '/');
     };
+
 
     return (
         <div className="min-h-[calc(100vh-130px)] grid grid-cols-1 md:grid-cols-2 bg-[#f4ede4] mt-16">

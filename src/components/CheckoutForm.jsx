@@ -2,7 +2,7 @@ import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useAuth } from "../context/AuthContext";
-import { QRCodeCanvas } from "qrcode.react"; // ← LE VRAI, PAS QRCode
+import { QRCodeCanvas } from "qrcode.react";
 
 export default function CheckoutForm() {
     const stripe = useStripe();
@@ -25,6 +25,15 @@ export default function CheckoutForm() {
             setQrKey(finalKey);
             setLoading(false);
             setDone(true);
+
+            // ✅ Stocker l'achat dans le localStorage
+            const previousPurchases = JSON.parse(localStorage.getItem("achats")) || [];
+            const newPurchase = {
+                email: user.email,
+                date: new Date().toISOString(),
+                qr: finalKey,
+            };
+            localStorage.setItem("achats", JSON.stringify([...previousPurchases, newPurchase]));
         }, 2000);
     };
 

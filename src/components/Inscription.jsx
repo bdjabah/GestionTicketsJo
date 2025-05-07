@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { v4 as uuidv4 } from 'uuid';
 import inscriptionBg from '../assets/img-inscription.jpg';
 import { useAuth } from '../context/AuthContext';
 
@@ -19,20 +18,37 @@ export default function Inscription() {
     });
 
     const [error, setError] = useState('');
+    const [passwordHint, setPasswordHint] = useState('');
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+        if (name === "password") {
+            const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/;
+            if (!regex.test(value)) {
+                setPasswordHint("Le mot de passe doit contenir une majuscule, une minuscule et un chiffre.");
+            } else {
+                setPasswordHint("");
+            }
+        }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setError("");
 
         // Vérifications
-        const { civilite, prenom, nom, email, password, confirmPassword, telephone } = formData;
+        const { civilite, prenom, nom, email, password, confirmPassword, telephone, adresse } = formData;
 
-        if (!civilite || !prenom || !nom || !email || !password || !confirmPassword || !telephone) {
+        if (!civilite || !prenom || !nom || !email || !password || !confirmPassword || !telephone || !adresse) {
             setError("Tous les champs sont obligatoires.");
+            return;
+        }
+
+        // Validation mot de passe côté frontend
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/;
+        if (!passwordRegex.test(password)) {
+            setError("Le mot de passe doit contenir au moins une majuscule, une minuscule et un chiffre.");
             return;
         }
 
@@ -41,21 +57,49 @@ export default function Inscription() {
             return;
         }
 
-        // Génération de la clé secrète utilisateur
-        const clefUtilisateur = uuidv4();
+        try {
+            // 🔐 Appel réel au backend pour enregistrer l’utilisateur
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/register`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    nom,
+                    prenom,
+                    email,
+                    motDePasse: password,
+                    telephone,
+                    civilite,
+                    adresse,
+                }),
+            });
 
-        // Simule l'enregistrement dans le localStorage (base de données de stagiaires)
-        const user = {
-            email,
-            clefUtilisateur,
-        };
-        localStorage.setItem("user", JSON.stringify(user));
+            if (!res.ok) {
+                const message = await res.text();
+                setError(message || "Erreur lors de l'inscription.");
+                return;
+            }
 
-        login(email); // mise à jour du contexte d'authentification
-        navigate('/'); // redirection vers la page d'accueil ou autre
+            // ✔️ Connexion automatique après inscription réussie
+            const loginRes = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, motDePasse: password }),
+            });
 
-        // On nettoie
-        setError('');
+            if (!loginRes.ok) {
+                setError("Inscription réussie, mais erreur lors de la connexion.");
+                return;
+            }
+
+            const loginData = await loginRes.json();
+            await login(loginData.token);
+
+            // Redirection vers la page d’accueil
+            navigate("/");
+        } catch (error) {
+            console.error(error);
+            setError("Erreur lors de l'inscription.");
+        }
     };
 
     return (
@@ -77,7 +121,9 @@ export default function Inscription() {
                             {error}
                         </div>
                     )}
-
+                    <p className="text-sm text-gray-600 mb-4">
+                        <strong>Tous les champs sont obligatoires</strong>. Veuillez remplir le formulaire avec des informations valides.
+                    </p>
                     <div className="flex gap-4 mb-2">
                         <label className="flex items-center">
                             <input type="radio" name="civilite" value="Mme" checked={formData.civilite === "Mme"} onChange={handleChange} className="mr-1" />
@@ -92,10 +138,13 @@ export default function Inscription() {
                     <input type="text" name="prenom" placeholder="Prénom" value={formData.prenom} onChange={handleChange} className="w-full p-2 border rounded mb-4" required />
                     <input type="text" name="nom" placeholder="Nom" value={formData.nom} onChange={handleChange} className="w-full p-2 border rounded mb-4" required />
                     <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} className="w-full p-2 border rounded mb-4" required />
-                    <input type="password" name="password" placeholder="Mot de passe" value={formData.password} onChange={handleChange} className="w-full p-2 border rounded mb-4" required />
+                    <input type="password" name="password" placeholder="Mot de passe" value={formData.password} onChange={handleChange} className="w-full p-2 border rounded mb-4" required /> {passwordHint && (
+                        <p className="text-xs text-red-500 mb-4">{passwordHint}</p>
+                    )}
+
                     <input type="password" name="confirmPassword" placeholder="Confirmer le mot de passe" value={formData.confirmPassword} onChange={handleChange} className="w-full p-2 border rounded mb-4" required />
                     <input type="tel" name="telephone" placeholder="Téléphone" value={formData.telephone} onChange={handleChange} className="w-full p-2 border rounded mb-6" required />
-
+                    <input type="text" name="adresse" placeholder="Adresse" value={formData.adresse || ""} onChange={handleChange} className="w-full p-2 border rounded mb-6" required />
                     <button type="submit" className="w-1/2 mx-auto flex justify-center items-center mx-auto bg-[#d9c275] text-white py-2 rounded hover:opacity-90 transition">
                         Je crée mon compte
                     </button>
