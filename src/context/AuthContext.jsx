@@ -1,6 +1,6 @@
 // src/context/AuthContext.jsx
 
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect } from "react";
 
 const AuthContext = createContext();
 
@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("token", jwtToken);
 
         try {
-            const res = await fetch('import.meta.env.VITE_API_URL/api/utilisateurs/me', {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/utilisateurs/me`, {
                 headers: {
                     Authorization: `Bearer ${jwtToken}`,
                 },
@@ -52,8 +52,11 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const storedToken = localStorage.getItem("token");
         if (storedToken && !user) {
-            login(storedToken);
+            (async () => {
+                await login(storedToken);
+            })();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
@@ -63,4 +66,4 @@ export const AuthProvider = ({ children }) => {
     );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export { AuthContext };

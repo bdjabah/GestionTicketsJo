@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 import { useNavigate, useLocation } from 'react-router-dom';
 import loginImage from '../assets/img-page-connexion.png';
 import { FaGoogle, FaApple } from 'react-icons/fa';
