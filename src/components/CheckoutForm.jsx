@@ -1,7 +1,7 @@
 import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { useAuth } from '../context/useAuth';
+import { useAuth } from '../context/useAuth.jsx';
 import { QRCodeCanvas } from "qrcode.react";
 
 export default function CheckoutForm() {

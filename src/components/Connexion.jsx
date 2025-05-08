@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAuth } from '../context/useAuth';
+import { useAuth } from '../context/useAuth.jsx';
 import { useNavigate, useLocation } from 'react-router-dom';
 import loginImage from '../assets/img-page-connexion.png';
 import { FaGoogle, FaApple } from 'react-icons/fa';
@@ -28,12 +28,14 @@ export default function Connexion() {
                 }),
             });
 
+            // ❌ Si la réponse n'est pas OK (401, 403, 500...)
             if (!res.ok) {
                 const msg = await res.text();
                 setError(msg || "Échec de la connexion.");
                 return;
             }
 
+            // ✅ Récupération du token depuis la réponse
             const data = await res.json();
             const token = data.token;
 
@@ -45,17 +47,26 @@ export default function Connexion() {
             // ✅ Appelle le contexte Auth pour enregistrer le token et charger l'utilisateur
             await login(token);
 
-            // ✅ Redirection : on récupère la valeur "redirect" dans l'URL si elle existe
+            // ✅ On récupère l'URL de redirection s'il y en a une (ex: après tentative d'accès à /admin)
             const redirectTo = new URLSearchParams(location.search).get("redirect");
 
-            // ⛳ On redirige vers la page demandée, sinon vers la page d’accueil
-            navigate(redirectTo || '/');
+            // ✅ On récupère l'utilisateur depuis localStorage
+            const user = JSON.parse(localStorage.getItem("user"));
+
+            // 🔁 Redirections intelligentes selon le rôle
+            if (redirectTo) {
+                navigate(redirectTo); // → Reprend la route demandée initialement
+            } else if (user?.role?.nomRole === 'ADMIN') {
+                navigate('/admin'); // → Dashboard admin
+            } else {
+                navigate('/moncompte'); // → Compte utilisateur
+            }
+
         } catch (err) {
             console.error(err);
             setError("Erreur lors de la tentative de connexion.");
         }
     };
-
 
     return (
         <div className="min-h-[calc(100vh-130px)] grid grid-cols-1 md:grid-cols-2 bg-[#f4ede4] mt-16">

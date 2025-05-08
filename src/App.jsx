@@ -10,7 +10,11 @@ import Panier from './components/Panier.jsx';
 import Connexion from './components/Connexion.jsx'
 import Paiement from './components/Paiement.jsx';
 import Inscription from './components/Inscription.jsx';
-import UserAccount from './components/UserAccount';
+import UserAccount from './components/UserAccount.jsx';
+import AdminDashboard from './components/AdminDashboard.jsx';
+import AdminRoute from './routes/AdminRoute';
+import EvenementList from './components/admin/EvenementList.jsx';
+import EvenementForm from './components/admin/EvenementForm.jsx';
 
 function App() {
   return (
@@ -38,6 +42,26 @@ function App() {
             <Route path="/inscription" element={<Inscription />} />
             <Route path="/paiement" element={<Paiement />} />
             <Route path="/moncompte" element={<UserAccount />} />
+            <Route path="/admin" element={<AdminRoute>
+              <AdminDashboard />
+            </AdminRoute>} />
+            <Route path="/admin/evenements" element={
+              <AdminRoute>
+                <EvenementList />
+              </AdminRoute>
+            } />
+            <Route path="/admin/evenements/nouveau" element={
+              <AdminRoute>
+                <EvenementForm />
+              </AdminRoute>
+            } />
+            <Route path="/admin/evenements/:id/edit" element={
+              <AdminRoute>
+                <EvenementForm />
+              </AdminRoute>
+            } />
+
+
           </Routes>
         </main>
 

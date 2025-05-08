@@ -6,7 +6,7 @@ import {
     UserCircleIcon,
 } from '@heroicons/react/24/solid';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../context/useAuth'; // ← ajout ici
+import { useAuth } from '../context/useAuth.jsx';
 import logo from '../assets/logo-jo.png';
 
 export default function Header() {
