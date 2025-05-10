@@ -1,154 +1,75 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function EvenementForm() {
     const navigate = useNavigate();
-    const { id } = useParams();
-    const isEdit = Boolean(id);
-
     const [formData, setFormData] = useState({
         nomEvenement: '',
         discipline: '',
         dateEvenement: '',
         lieuEvenement: '',
-        description: '',
-        image: null,
+        descriptionEvenement: '',
     });
-
+    const [image, setImage] = useState(null);
     const [error, setError] = useState('');
+    const token = localStorage.getItem("token");
 
-    useEffect(() => {
-        if (isEdit) {
-            fetch(`${import.meta.env.VITE_API_URL}/api/evenements/${id}`)
-                .then(res => res.json())
-                .then(data => {
-                    setFormData({
-                        ...data,
-                        image: null,
-                    });
-                })
-                .catch(err => {
-                    console.error("Erreur de chargement :", err);
-                    setError("Échec du chargement de l'événement");
-                });
-        }
-    }, [id, isEdit]);
-
+    // Gestion des champs texte
     const handleChange = (e) => {
-        const { name, value, files } = e.target;
-        if (name === 'image') {
-            setFormData(prev => ({ ...prev, image: files[0] }));
-        } else {
-            setFormData(prev => ({ ...prev, [name]: value }));
-        }
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    // Gestion du fichier image
+    const handleImageChange = (e) => {
+        setImage(e.target.files[0]);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
 
-        const form = new FormData();
-        form.append('nomEvenement', formData.nomEvenement);
-        form.append('discipline', formData.discipline);
-        form.append('dateEvenement', formData.dateEvenement);
-        form.append('lieuEvenement', formData.lieuEvenement);
-        form.append('description', formData.description);
-        if (formData.image) {
-            form.append('image', formData.image);
-        }
-
-        const method = isEdit ? 'PUT' : 'POST';
-        const url = isEdit
-            ? `${import.meta.env.VITE_API_URL}/api/evenements/${id}`
-            : `${import.meta.env.VITE_API_URL}/api/evenements`;
-
         try {
-            const res = await fetch(url, {
-                method,
-                body: form,
+            const data = new FormData();
+            data.append("evenement", JSON.stringify(formData)); // les champs en JSON texte
+            if (image) data.append("image", image); // l'image
+
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/evenements/upload`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                body: data,
             });
 
             if (!res.ok) {
-                throw new Error("Échec de l'enregistrement");
+                const msg = await res.text();
+                throw new Error(msg || 'Erreur lors de la création');
             }
 
-            navigate('/admin/evenements');
+            navigate('/admin'); // redirige après succès
         } catch (err) {
+            console.error(err);
             setError(err.message);
         }
     };
 
     return (
-        <div className="mt-16 flex justify-center px-4">
-            <div className="bg-white p-8 rounded shadow-md w-full max-w-2xl">
-                <h2 className="text-2xl font-bold mb-6 text-center">
-                    {isEdit ? 'Modifier' : 'Créer'} un Événement
-                </h2>
+        <form onSubmit={handleSubmit} className="bg-white shadow-md rounded p-6 mt-20 max-w-2xl mx-auto">
+            <h2 className="text-xl font-bold mb-4">Créer un événement</h2>
 
-                {error && <p className="text-red-600 mb-4 text-center">{error}</p>}
+            {error && <div className="text-red-600 mb-4">{error}</div>}
 
-                <form onSubmit={handleSubmit} className="space-y-4" encType="multipart/form-data">
-                    <input
-                        type="text"
-                        name="nomEvenement"
-                        placeholder="Nom de l'événement"
-                        value={formData.nomEvenement}
-                        onChange={handleChange}
-                        required
-                        className="w-full p-2 border rounded"
-                    />
-                    <input
-                        type="text"
-                        name="discipline"
-                        placeholder="Discipline"
-                        value={formData.discipline}
-                        onChange={handleChange}
-                        required
-                        className="w-full p-2 border rounded"
-                    />
-                    <input
-                        type="date"
-                        name="dateEvenement"
-                        value={formData.dateEvenement}
-                        onChange={handleChange}
-                        required
-                        className="w-full p-2 border rounded"
-                    />
-                    <input
-                        type="text"
-                        name="lieuEvenement"
-                        placeholder="Lieu"
-                        value={formData.lieuEvenement}
-                        onChange={handleChange}
-                        required
-                        className="w-full p-2 border rounded"
-                    />
-                    <textarea
-                        name="description"
-                        placeholder="Description"
-                        value={formData.description}
-                        onChange={handleChange}
-                        className="w-full p-2 border rounded"
-                        rows={4}
-                    />
-                    <input
-                        type="file"
-                        name="image"
-                        accept="image/*"
-                        onChange={handleChange}
-                        className="w-full border rounded p-2"
-                    />
-
-                    <div className="flex justify-end">
-                        <button
-                            type="submit"
-                            className="bg-[#d9c275] text-white px-6 py-2 rounded hover:opacity-90 transition"
-                        >
-                            {isEdit ? 'Mettre à jour' : 'Créer'}
-                        </button>
-                    </div>
-                </form>
+            <input name="nomEvenement" placeholder="Nom" onChange={handleChange} required className="w-full mb-4 p-2 border rounded" />
+            <input name="discipline" placeholder="Discipline" onChange={handleChange} required className="w-full mb-4 p-2 border rounded" />
+            <input type="date" name="dateEvenement" onChange={handleChange} required className="w-full mb-4 p-2 border rounded" />
+            <input name="lieuEvenement" placeholder="Lieu" onChange={handleChange} required className="w-full mb-4 p-2 border rounded" />
+            <textarea name="descriptionEvenement" placeholder="Description" onChange={handleChange} className="w-full mb-4 p-2 border rounded" />
+            <input type="file" onChange={handleImageChange} accept="image/*" className="mb-4" />
+            <div className="flex justify-end mt-4">
+                <button type="submit" className="bg-[#e0d2b9] text-gray-800 px-4 py-2 rounded-md hover:shadow-md transition">
+                    Enregistrer
+                </button>
             </div>
-        </div>
+        </form>
     );
 }

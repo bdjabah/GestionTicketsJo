@@ -15,6 +15,8 @@ import AdminDashboard from './components/AdminDashboard.jsx';
 import AdminRoute from './routes/AdminRoute';
 import EvenementList from './components/admin/EvenementList.jsx';
 import EvenementForm from './components/admin/EvenementForm.jsx';
+import TicketsList from './components/admin/TicketsList.jsx';
+import TicketsForm from './components/admin/TicketsForm.jsx';
 
 function App() {
   return (
@@ -50,7 +52,7 @@ function App() {
                 <EvenementList />
               </AdminRoute>
             } />
-            <Route path="/admin/evenements/nouveau" element={
+            <Route path="/admin/evenements/new" element={
               <AdminRoute>
                 <EvenementForm />
               </AdminRoute>
@@ -60,8 +62,21 @@ function App() {
                 <EvenementForm />
               </AdminRoute>
             } />
-
-
+            <Route path="/admin/tickets" element={
+              <AdminRoute>
+                <TicketsList />
+              </AdminRoute>
+            } />
+            <Route path="/admin/tickets/new" element={
+              <AdminRoute>
+                <TicketsForm />
+              </AdminRoute>
+            } />
+            <Route path="/admin/tickets/:id/edit" element={
+              <AdminRoute>
+                <TicketsForm />
+              </AdminRoute>
+            } />
           </Routes>
         </main>
 

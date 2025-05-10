@@ -1,4 +1,3 @@
-import React from 'react';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/useAuth.jsx'; // ajuste selon ton chemin réel
@@ -15,7 +14,7 @@ export default function AdminDashboard() {
     }, [user, navigate]);
 
     return (
-        <div className="p-4">
+        <div className=" mt-20 p-4">
             <h1 className="text-3xl font-bold mb-8">Espace Administrateur</h1>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -32,7 +31,7 @@ export default function AdminDashboard() {
                     Gestion Commandes
                 </button>
                 <button
-                    onClick={() => navigate('/admin/produits')}
+                    onClick={() => navigate('/admin/tickets')}
                     className="border border-gray-300 rounded-lg p-6 hover:bg-gray-100 transition"
                 >
                     Gestion Produits
