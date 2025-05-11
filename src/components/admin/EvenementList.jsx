@@ -91,7 +91,7 @@ export default function EvenementList() {
                 {evenements.map((event) => (
                     <div
                         key={event.idEvenement}
-                        className="bg-white shadow-md rounded-lg p-6 flex flex-col md:flex-row items-center justify-between gap-4 border"
+                        className="bg-white shadow-md rounded-lg p-6 flex flex-col md:flex-row items-center justify-between gap-4 "
                     >
                         <div className="flex-1">
                             <h3 className="text-xl font-bold text-gray-800 mb-2">{event.nomEvenement}</h3>
