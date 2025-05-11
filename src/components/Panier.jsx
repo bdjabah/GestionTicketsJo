@@ -1,11 +1,13 @@
 import { usePanier } from '../context/PanierContext';
 import { useTicketEdit } from '../context/TicketEditContext';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/useAuth'; // 🔐 On importe le contexte d'authentification
 
 export default function Panier() {
     const { panier, resetPanier, removeFromPanier } = usePanier();
     const { setTicketToEdit, setEditIndex } = useTicketEdit();
-    const navigate = useNavigate(); // 🔁 position corrigée ici
+    const navigate = useNavigate();
+    const { user } = useAuth(); // 🔐 Récupère les infos de l'utilisateur connecté
 
     const groupedTickets = panier.reduce((acc, ticket) => {
         if (!acc[ticket.type]) acc[ticket.type] = [];
@@ -13,9 +15,13 @@ export default function Panier() {
         return acc;
     }, {});
 
-    // ✅ CHANGEMENT ICI : ajout du paramètre redirect
-    const handleLogin = () => {
-        navigate("/connexion?redirect=/paiement");
+    // ✅ Vérifie si l'utilisateur est connecté avant d'aller sur la page de paiement
+    const handlePaiement = () => {
+        if (user) {
+            navigate("/paiement");
+        } else {
+            navigate("/connexion?redirect=/paiement");
+        }
     };
 
     const typeLabels = {
@@ -30,10 +36,7 @@ export default function Panier() {
         famille: 342,
     };
 
-    const prixTotal = panier.reduce((acc, ticket) => {
-        return acc + (prixParType[ticket.type] || 0);
-    }, 0);
-
+    const prixTotal = panier.reduce((acc, ticket) => acc + (prixParType[ticket.type] || 0), 0);
     const taxes = prixTotal * 0.05;
     const totalAPayer = prixTotal + taxes;
 
@@ -82,6 +85,7 @@ export default function Panier() {
                                                 key={idx}
                                                 className="w-64 bg-white p-4 rounded shadow text-sm border border-gray-300 relative"
                                             >
+                                                {/* Bouton suppression */}
                                                 <button
                                                     onClick={() => removeFromPanier(globalIndex)}
                                                     className="absolute top-2 right-2 text-red-600 text-sm hover:text-red-800"
@@ -89,6 +93,8 @@ export default function Panier() {
                                                 >
                                                     ❌
                                                 </button>
+
+                                                {/* Bouton modification */}
                                                 <button
                                                     onClick={() => {
                                                         setTicketToEdit(ticket);
@@ -101,6 +107,7 @@ export default function Panier() {
                                                     ✏️
                                                 </button>
 
+                                                {/* Infos du ticket */}
                                                 <p className="font-bold">
                                                     {ticket.civilite} {ticket.prenom} {ticket.nom}
                                                 </p>
@@ -137,8 +144,11 @@ export default function Panier() {
                                 <span>{totalAPayer.toFixed(2)} €</span>
                             </div>
 
-                            {/* ✅ Bouton mis à jour ici */}
-                            <button onClick={handleLogin} className="mt-6 w-full bg-[#d9c275] text-white py-2 rounded hover:opacity-90 transition">
+                            {/* ✅ Redirection intelligente vers paiement */}
+                            <button
+                                onClick={handlePaiement}
+                                className="mt-6 w-full bg-[#d9c275] text-white py-2 rounded hover:opacity-90 transition"
+                            >
                                 Procéder au paiement
                             </button>
 

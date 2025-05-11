@@ -8,4 +8,9 @@ export default defineConfig({
   tailwindcss(),
 
   ],
-})
+  server: {
+    host: true,
+    allowedHosts: ['.ngrok-free.app'] // ✅ autorise tous les sous-domaines ngrok
+  }
+}
+)
