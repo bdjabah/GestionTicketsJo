@@ -101,7 +101,7 @@ export default function TicketsForm() {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="max-w-lg mx-auto mt-10 p-6 bg-white rounded shadow">
+        <form onSubmit={handleSubmit} className="max-w-lg mx-auto mt-10 p-6 bg-white rounded shadow mt-20">
             <h2 className="text-2xl font-bold mb-4">{id ? 'Modifier' : 'Ajouter'} un billet</h2>
 
             {error && <p className="text-red-500 mb-4">{error}</p>}
@@ -147,13 +147,15 @@ export default function TicketsForm() {
                     className="w-32 h-32 object-cover rounded mb-4"
                 />
             )}
-            <input
-                id="image"
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="mb-4"
-            />
+
+            <label className="mb-4 inline-block cursor-pointer bg-gray-100 px-3 py-2 rounded">
+                <input
+                    id="image"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="mb-4"
+                /> </label>
 
             <button
                 type="submit"

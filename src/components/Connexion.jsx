@@ -1,149 +1,172 @@
-import { useState } from 'react';
-import { useAuth } from '../context/useAuth.jsx';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Eye, EyeOff } from 'lucide-react';
+import { useAuth } from '../context/useAuth';
 import loginImage from '../assets/img-page-connexion.png';
 import { FaGoogle, FaApple } from 'react-icons/fa';
 
-export default function Connexion() {
-    const { login } = useAuth();
+/**
+ * Page de connexion utilisateur.
+ * @component
+ */
+export default function Login() {
     const navigate = useNavigate();
-    const location = useLocation();
+    const { login } = useAuth();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
+    const googleAuthUrl = `${import.meta.env.VITE_API_URL}/oauth2/authorization/google`
 
+    /**
+     * Soumet le formulaire de connexion.
+     * Envoie les credentials au backend et stocke le token en cas de succès.
+     * @param {React.FormEvent} e événement de soumission du formulaire
+     */
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError("");
+        setError('');
 
         try {
-            // 🔐 Appel réel au backend pour se connecter
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    email: email,
-                    motDePasse: password, // ← Doit correspondre au DTO backend
-                }),
-            });
+            const res = await fetch(
+                `${import.meta.env.VITE_API_URL}/api/auth/login`,
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, motDePasse: password }),
+                }
+            );
 
-            // ❌ Si la réponse n'est pas OK (401, 403, 500...)
             if (!res.ok) {
                 const msg = await res.text();
-                setError(msg || "Échec de la connexion.");
+                setError(msg || 'Erreur lors de la connexion.');
                 return;
             }
 
-            // ✅ Récupération du token depuis la réponse
             const data = await res.json();
-            const token = data.token;
-
-            if (!token) {
-                setError("Token manquant dans la réponse.");
-                return;
-            }
-
-            // ✅ Appelle le contexte Auth pour enregistrer le token et charger l'utilisateur
-            await login(token);
-
-            // ✅ On récupère l'URL de redirection s'il y en a une (ex: après tentative d'accès à /admin)
-            const redirectTo = new URLSearchParams(location.search).get("redirect");
-
-            // ✅ On récupère l'utilisateur depuis localStorage
-            const user = JSON.parse(localStorage.getItem("user"));
-
-            // 🔁 Redirections intelligentes selon le rôle
-            if (redirectTo) {
-                navigate(redirectTo); // → Reprend la route demandée initialement
-            } else if (user?.role?.nomRole === 'ADMIN') {
-                navigate('/admin'); // → Dashboard admin
-            } else {
-                navigate('/moncompte'); // → Compte utilisateur
-            }
-
+            await login(data.token);
+            navigate('/');
         } catch (err) {
             console.error(err);
-            setError("Erreur lors de la tentative de connexion.");
+            setError('Erreur de réseau.');
         }
     };
 
     return (
         <div className="min-h-[calc(100vh-130px)] grid grid-cols-1 md:grid-cols-2 bg-[#f4ede4] mt-16">
-            {/* Image à gauche */}
-            <div className="hidden md:block bg-cover bg-center" style={{ backgroundImage: `url(${loginImage})` }}></div>
+            {/** Colonne image (masquée en mobile) */}
+            <div
+                className="hidden md:block bg-cover bg-center"
+                style={{ backgroundImage: `url(${loginImage})` }}
+            />
 
-            {/* Formulaire à droite */}
-            <div className="relative flex flex-col justify-start items-center p-8">
+            {/** Colonne formulaire */}
+            <div className="flex flex-col items-center p-8">
+                {/** Bouton retour */}
                 <button
                     onClick={() => navigate(-1)}
-                    className="mb-2 w-10 px-3 h-10 rounded-full bg-[#d9c275] text-black text-lg flex items-center justify-center mr-auto"
+                    className="mb-2 w-10 h-10 rounded-full bg-[#d9c275] text-black text-lg flex items-center justify-center self-start"
                 >
                     ←
                 </button>
 
-                <div className="w-full max-w-md mx-auto mt-2 bg-white p-6 rounded shadow-md">
-                    <form onSubmit={handleSubmit}>
-                        {error && (
-                            <div className="bg-red-100 text-red-700 text-sm font-semibold mb-4 p-2 rounded text-center">
-                                {error}
-                            </div>
-                        )}
+                {/** Formulaire */}
+                <form
+                    onSubmit={handleSubmit}
+                    className="w-full max-w-md bg-white p-8 rounded shadow-md"
+                >
+                    <h2 className="text-2xl font-semibold mb-6 text-center">
+                        Connexion
+                    </h2>
 
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    {/** Affichage d’erreur si présent */}
+                    {error && (
+                        <div className="text-red-600 text-sm font-semibold mb-4">
+                            {error}
+                        </div>
+                    )}
+
+                    {/** Champ Email */}
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Email
+                    </label>
+                    <input
+                        type="email"
+                        placeholder="Email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full p-2 border rounded mb-4"
+                        required
+                    />
+
+                    {/** Champ Mot de passe avec toggle visibilité */}
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Mot de passe
+                    </label>
+                    <div className="relative mb-6">
                         <input
-                            type="email"
-                            placeholder="Email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="w-full p-2 border rounded mb-4"
-                            required
-                        />
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
-                        <input
-                            type="password"
+                            type={showPassword ? 'text' : 'password'}
                             placeholder="Mot de passe"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full p-2 border rounded mb-4"
+                            className="w-full p-2 border rounded pr-10"
                             required
                         />
                         <button
-                            type="submit"
-                            className="w-1/2 mx-auto flex justify-center items-center bg-[#d9c275] text-white py-2 rounded hover:opacity-90 transition"
+                            type="button"
+                            onClick={() => setShowPassword((v) => !v)}
+                            className="absolute inset-y-0 right-2 flex items-center px-2 text-gray-600"
                         >
-                            Je me connecte
+                            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                         </button>
-                    </form>
+                    </div>
 
-                    <div className="w-full text-right mt-2">
-                        <a href="/reset-password" className="text-sm text-blue-600 hover:underline">
+                    {/** Lien mot de passe oublié */}
+                    <div className="text-right mb-6">
+                        <a
+                            href="/reset-password"
+                            className="text-sm text-blue-600 hover:underline"
+                        >
                             Mot de passe oublié ?
                         </a>
                     </div>
-                </div>
 
-                {/* Divider */}
-                <div className="flex items-center w-full max-w-sm my-6">
-                    <hr className="flex-grow border-black" />
-                    <span className="px-4 text-lg">Ou se connecter avec</span>
-                    <hr className="flex-grow border-black" />
-                </div>
+                    {/** Bouton de soumission */}
+                    <button
+                        type="submit"
+                        className="w-full bg-[#d9c275] text-white py-2 rounded hover:opacity-90 transition"
+                    >
+                        Je me connecte
+                    </button>
 
-                {/* Social login (fake, évidemment) */}
-                <div className="flex space-x-6 mb-6">
-                    <FaGoogle className="text-3xl cursor-pointer hover:opacity-75" />
-                    <FaApple className="text-3xl cursor-pointer hover:opacity-75" />
-                </div>
+                    {/** Séparateur pour authentification sociale */}
+                    <div className="flex items-center w-full my-6">
+                        <hr className="flex-grow border-black" />
+                        <span className="px-4 text-lg">Ou se connecter avec</span>
+                        <hr className="flex-grow border-black" />
+                    </div>
 
-                {/* Lien vers inscription */}
-                <p className="mb-2">Nouveau client ?</p>
-                <button
-                    onClick={() => navigate('/inscription')}
-                    className="bg-[#d9c275] text-white px-6 py-2 rounded hover:opacity-90"
-                >
-                    Je crée un nouveau compte
-                </button>
+                    {/** Boutons Google et Apple */}
+                    <div className="flex justify-center space-x-6 mb-6 text-3xl text-gray-700">
+                        <a href={googleAuthUrl} >
+                            <FaGoogle className="cursor-pointer hover:opacity-75" />
+                        </a>
+
+                    </div>
+
+                    {/** Lien vers la page d'inscription */}
+                    <p className="text-center text-sm mb-0">
+                        Nouveau client ?{' '}
+                        <button
+                            type="button"
+                            onClick={() => navigate('/inscription')}
+                            className="text-[#d9c275] hover:underline"
+                        >
+                            Créer un compte
+                        </button>
+                    </p>
+                </form>
             </div>
         </div>
     );

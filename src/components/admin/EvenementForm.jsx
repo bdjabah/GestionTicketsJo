@@ -11,6 +11,7 @@ export default function EvenementForm() {
         descriptionEvenement: '',
     });
     const [image, setImage] = useState(null);
+    const [imagePreview, setImagePreview] = useState('');
     const [error, setError] = useState('');
     const token = localStorage.getItem("token");
 
@@ -21,7 +22,17 @@ export default function EvenementForm() {
 
     // Gestion du fichier image
     const handleImageChange = (e) => {
-        setImage(e.target.files[0]);
+        const file = e.target.files[0];
+        if (!file) return;
+
+        setImage(file);
+
+        // Génère l'URL de preview
+        const reader = new FileReader();
+        reader.onload = () => {
+            setImagePreview(reader.result);  // reader.result est une data-URL
+        };
+        reader.readAsDataURL(file);
     };
 
     const handleSubmit = async (e) => {
@@ -64,7 +75,18 @@ export default function EvenementForm() {
             <input type="date" name="dateEvenement" onChange={handleChange} required className="w-full mb-4 p-2 border rounded" />
             <input name="lieuEvenement" placeholder="Lieu" onChange={handleChange} required className="w-full mb-4 p-2 border rounded" />
             <textarea name="descriptionEvenement" placeholder="Description" onChange={handleChange} className="w-full mb-4 p-2 border rounded" />
-            <input type="file" onChange={handleImageChange} accept="image/*" className="mb-4" />
+
+            <label className="mb-4 inline-block cursor-pointer bg-gray-100 px-3 py-2 rounded">
+                Choisir une image
+                {imagePreview && <img src={imagePreview} alt="Aperçu" />}
+                <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="hidden"
+                />
+            </label>
+
             <div className="flex justify-end mt-4">
                 <button type="submit" className="bg-[#e0d2b9] text-gray-800 px-4 py-2 rounded-md hover:shadow-md transition">
                     Enregistrer
@@ -72,4 +94,4 @@ export default function EvenementForm() {
             </div>
         </form>
     );
-}
+} //<input type="file" onChange={handleImageChange} accept="image/*" className="mb-4" />

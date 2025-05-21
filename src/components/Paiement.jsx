@@ -5,7 +5,7 @@ import { usePanier } from "../context/PanierContext";
 import { useEffect, useState } from "react";
 
 // Clé publique Stripe
-const stripePromise = loadStripe("pk_test_xxxxxxxxxxxxxx");
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
 export default function Paiement() {
     const { panier } = usePanier();

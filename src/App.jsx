@@ -17,6 +17,7 @@ import EvenementList from './components/admin/EvenementList.jsx';
 import EvenementForm from './components/admin/EvenementForm.jsx';
 import TicketsList from './components/admin/TicketsList.jsx';
 import TicketsForm from './components/admin/TicketsForm.jsx';
+import ConfirmationPay from './components/ConfirmationPay.jsx';
 
 function App() {
   return (
@@ -77,7 +78,9 @@ function App() {
                 <TicketsForm />
               </AdminRoute>
             } />
+            <Route path="/confirmationPay" element={<ConfirmationPay />} />
           </Routes>
+
         </main>
 
         <Footer />

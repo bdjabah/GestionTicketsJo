@@ -21,17 +21,16 @@ export default function Sports() {
 
     const openModal = (sport) => setSelectedSport(sport);
     const closeModal = () => setSelectedSport(null);
-
+    const getImageUrl = (name) => `https://fbah-ticketjo.fr/uploads/${name}`;
     return (
         <section className="bg-[#f4ede4] py-20 px-6">
             <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 text-gray-800">
                 {sportsData.map((sport, index) => (
                     <div key={index} className="flex flex-col items-center text-center">
                         <img
-                            src={sport.image}
-                            alt={sport.title}
-                            className="w-72 h-44 object-cover rounded-md shadow-md mb-4"
-                        />
+                            src={getImageUrl(selectedSport.image)}
+                            alt={selectedSport.title}
+                            className="w-full h-64 object-cover rounded mb-4" />
                         <h3 className="font-bold text-lg">{sport.title}</h3>
                         <em className="text-sm text-gray-700 mt-1">{sport.subtitle}</em>
                         <p className="text-sm mt-3 mb-4 px-4">{sport.description}</p>

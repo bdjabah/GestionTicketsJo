@@ -1,53 +1,68 @@
 // src/pages/CheckoutForm.jsx
-
-import { PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { useState } from "react";
+import { PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
+/**
+ * Composant de formulaire de paiement Stripe.
+ * Utilise Stripe Elements pour sécuriser les informations de carte.
+ */
 export default function CheckoutForm() {
-    const stripe = useStripe();        // Objet Stripe
-    const elements = useElements();    // Récupère le formulaire Stripe
-    const [loading, setLoading] = useState(false);
-    const [message, setMessage] = useState("");
+    const stripe = useStripe();        // Instance Stripe
+    const elements = useElements();    // Accès aux éléments Stripe (formulaire carte)
 
-    // Quand l'utilisateur clique sur "Payer maintenant"
+    const [loading, setLoading] = useState(false);   // État de chargement pendant le paiement
+    const [message, setMessage] = useState("");      // Message d’erreur ou d’information
+
+    /**
+     * Soumission du formulaire de paiement
+     */
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!stripe || !elements) return; // On attend que Stripe soit prêt
 
-        setLoading(true); // On bloque le bouton pendant le traitement
+        // On s'assure que Stripe est bien chargé
+        if (!stripe || !elements) return;
 
-        // Stripe confirme le paiement avec les infos du formulaire
-        const { error } = await stripe.confirmPayment({
-            elements,
-            confirmParams: {
-                return_url: window.location.origin + "/confirmation", // Redirection après paiement
-            },
-        });
+        setLoading(true);  // Active le mode "chargement"
+        setMessage("");    // Réinitialise les messages précédents
 
-        // S’il y a une erreur (ex: carte refusée)
-        if (error) {
-            setMessage(error.message); // Affiche le message d'erreur
+        try {
+            // Demande à Stripe de confirmer le paiement
+            const { error } = await stripe.confirmPayment({
+                elements,
+                confirmParams: {
+                    return_url: window.location.origin + "/ConfirmationPay", // Redirection après succès
+                },
+            });
+
+            // En cas d’erreur (ex: carte refusée)
+            if (error) {
+                setMessage(error.message || "Une erreur est survenue.");
+            }
+        } catch (err) {
+            setMessage("Erreur inattendue : " + err.message);
         }
 
-        setLoading(false); // Réactive le bouton
+        setLoading(false);  // Fin du chargement
     };
 
     return (
-        <form onSubmit={handleSubmit} className="bg-white p-6 border rounded shadow w-full">
-            <h3 className="font-semibold mb-4">Informations de paiement</h3>
+        <form onSubmit={handleSubmit} className="bg-white p-6 border rounded shadow w-full max-w-md mx-auto">
+            <h3 className="font-semibold mb-4 text-lg">Informations de paiement</h3>
 
-            {/* Formulaire intelligent fourni par Stripe */}
+            {/* Le formulaire Stripe (automatique, sécurisé) */}
             <PaymentElement />
 
+            {/* Bouton de paiement */}
             <button
+                type="submit"
                 disabled={loading || !stripe || !elements}
-                className="mt-4 bg-[#d9c275] text-white w-full py-2 rounded"
+                className={`mt-4 w-full py-2 rounded ${loading ? "bg-gray-400" : "bg-[#d9c275] text-white"}`}
             >
                 {loading ? "Paiement en cours..." : "Payer maintenant"}
             </button>
 
-            {/* Affiche un message d’erreur si besoin */}
-            {message && <div className="text-red-500 mt-2">{message}</div>}
+            {/* Affichage des messages d’erreur ou d’info */}
+            {message && <div className="text-red-500 mt-3">{message}</div>}
         </form>
     );
 }
