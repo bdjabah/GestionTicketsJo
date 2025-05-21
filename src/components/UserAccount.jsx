@@ -38,8 +38,6 @@ export default function UserAccount() {
                 </p>
             )}
 
-
-
             <div className="mt-10">
                 <h3 className="text-xl font-bold mb-4">🧾 Historique des billets</h3>
                 {mesAchats.length === 0 ? (
