@@ -74,6 +74,10 @@ export default function TicketForm() {
         navigate('/boutique');
     };
 
+    const handleAccesToCart = () => {
+        navigate('/panier');
+    };
+
     return (
         <div className="pt-32 pb-16 px-6 bg-[#f4ede4] min-h-[calc(100vh-150px)] flex flex-col items-center">
             <h2 className="text-2xl font-bold mb-8 text-center">
@@ -189,12 +193,19 @@ export default function TicketForm() {
                         </div>
                     ))}
 
-                    <div className="text-center mt-6">
+                    <div className="text-center mt-6 flex justify-center gap-4">
+
                         <button
                             onClick={handleReturnToShop}
                             className="bg-[#d9c275] text-white px-6 py-2 rounded hover:opacity-90"
                         >
                             Retour à la boutique
+                        </button>
+                        <button
+                            onClick={handleAccesToCart}
+                            className="bg-[#d9c275] text-white px-6 py-2 rounded hover:opacity-90"
+                        >
+                            Acceder au panier
                         </button>
                     </div>
                 </div>

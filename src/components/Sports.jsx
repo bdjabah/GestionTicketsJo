@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 export default function Sports() {
     const [sportsData, setSportsData] = useState([]);
@@ -21,15 +21,27 @@ export default function Sports() {
 
     const openModal = (sport) => setSelectedSport(sport);
     const closeModal = () => setSelectedSport(null);
-    const getImageUrl = (name) => `https://fbah-ticketjo.fr/uploads/${name}`;
+    const getImageUrl = (name) => {
+        if (!name) return ''  // ou une URL de fallback
+        // Si name est déjà une URL absolue, on la renvoie directement
+        if (name.startsWith('http://') || name.startsWith('https://')) {
+            return name
+        }
+        // Sinon on construit l’URL à partir de l’API_URL
+        // On enlève les slashs en trop au cas où :
+        const cleanName = name.replace(/^\/+/, '').replace(/\/+$/, '')
+        return `${import.meta.env.VITE_API_URL.replace(/\/+$/, '')}/uploads/${cleanName}`
+    }
+
     return (
         <section className="bg-[#f4ede4] py-20 px-6">
             <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 text-gray-800">
                 {sportsData.map((sport, index) => (
                     <div key={index} className="flex flex-col items-center text-center">
+                        {/* Utilise sport.image au lieu de selectedSport.image pour chaque carte */}
                         <img
-                            src={getImageUrl(selectedSport.image)}
-                            alt={selectedSport.title}
+                            src={sport.image ? getImageUrl(sport.image) : '/fallback.jpg'}
+                            alt={sport.title}
                             className="w-full h-64 object-cover rounded mb-4" />
                         <h3 className="font-bold text-lg">{sport.title}</h3>
                         <em className="text-sm text-gray-700 mt-1">{sport.subtitle}</em>
@@ -42,12 +54,17 @@ export default function Sports() {
                         </button>
                     </div>
                 ))}
+
                 {selectedSport && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                         <div className="bg-white p-6 rounded-lg shadow-lg max-w-xl w-full relative">
                             <button onClick={closeModal} className="absolute top-3 right-4 text-xl font-bold text-red-500">✖</button>
                             <h2 className="text-xl font-bold text-center mb-4">{selectedSport.title}</h2>
-                            <img src={selectedSport.image} alt={selectedSport.title} className="w-full h-64 object-cover rounded mb-4" />
+                            {/* Affiche l'image du sport sélectionné dans la modale */}
+                            <img
+                                src={selectedSport.image ? getImageUrl(selectedSport.image) : '/fallback.jpg'}
+                                alt={selectedSport.title}
+                                className="w-full h-64 object-cover rounded mb-4" />
                             <p><strong>Lieu :</strong> {selectedSport.lieu || 'Lieu non précisé'}</p>
                             <p><strong>Date :</strong> {selectedSport.date || 'Date non précisée'}</p>
                             <p className="mt-2">{selectedSport.description}</p>

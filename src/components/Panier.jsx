@@ -32,8 +32,8 @@ export default function Panier() {
 
     const prixParType = {
         solo: 45,
-        duo: 87,
-        famille: 342,
+        duo: 45,
+        famille: 45,
     };
 
     const prixTotal = panier.reduce((acc, ticket) => acc + (prixParType[ticket.type] || 0), 0);
