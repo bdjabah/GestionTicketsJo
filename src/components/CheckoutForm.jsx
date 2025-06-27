@@ -1,58 +1,62 @@
-// src/pages/CheckoutForm.jsx
 import { useState } from "react";
 import { PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
-/**
- * Composant de formulaire de paiement Stripe.
- * Utilise Stripe Elements pour sécuriser les informations de carte.
- */
-export default function CheckoutForm() {
-    const stripe = useStripe();        // Instance Stripe
-    const elements = useElements();    // Accès aux éléments Stripe (formulaire carte)
+export default function CheckoutForm({ commandeId }) {
+    const stripe = useStripe();
+    const elements = useElements();
 
-    const [loading, setLoading] = useState(false);   // État de chargement pendant le paiement
-    const [message, setMessage] = useState("");      // Message d’erreur ou d’information
+    const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState("");
 
-    /**
-     * Soumission du formulaire de paiement
-     */
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // On s'assure que Stripe est bien chargé
         if (!stripe || !elements) return;
 
-        setLoading(true);  // Active le mode "chargement"
-        setMessage("");    // Réinitialise les messages précédents
+        setLoading(true);
+        setMessage("");
 
         try {
-            // Demande à Stripe de confirmer le paiement
             const { error } = await stripe.confirmPayment({
                 elements,
                 confirmParams: {
-                    return_url: window.location.origin + "/ConfirmationPay", // Redirection après succès
+                    return_url: window.location.origin + "/ConfirmationPay",
                 },
             });
 
-            // En cas d’erreur (ex: carte refusée)
             if (error) {
                 setMessage(error.message || "Une erreur est survenue.");
+            } else {
+                // ✅ Mise à jour du statut après paiement réussi
+                if (commandeId) {
+                    try {
+                        await fetch(`${import.meta.env.VITE_API_URL}/api/commandes/${commandeId}/status`, {
+                            method: "PUT",
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `Bearer ${localStorage.getItem("token")}`,
+                            },
+                            body: JSON.stringify("PAYEE"),
+                        });
+                        console.log("Statut mis à jour à PAYEE");
+                    } catch (err) {
+                        console.error("Erreur mise à jour statut :", err.message);
+                    }
+                }
             }
         } catch (err) {
             setMessage("Erreur inattendue : " + err.message);
         }
 
-        setLoading(false);  // Fin du chargement
+        setLoading(false);
     };
 
     return (
         <form onSubmit={handleSubmit} className="bg-white p-6 border rounded shadow w-full max-w-md mx-auto">
             <h3 className="font-semibold mb-4 text-lg">Informations de paiement</h3>
 
-            {/* Le formulaire Stripe (automatique, sécurisé) */}
             <PaymentElement />
 
-            {/* Bouton de paiement */}
             <button
                 type="submit"
                 disabled={loading || !stripe || !elements}
@@ -61,7 +65,6 @@ export default function CheckoutForm() {
                 {loading ? "Paiement en cours..." : "Payer maintenant"}
             </button>
 
-            {/* Affichage des messages d’erreur ou d’info */}
             {message && <div className="text-red-500 mt-3">{message}</div>}
         </form>
     );

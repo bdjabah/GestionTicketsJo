@@ -41,7 +41,11 @@ export default function EvenementForm() {
 
         try {
             const data = new FormData();
-            data.append("evenement", JSON.stringify(formData)); // les champs en JSON texte
+            data.append("nomEvenement", formData.nomEvenement);
+            data.append("discipline", formData.discipline);
+            data.append("dateEvenement", formData.dateEvenement);
+            data.append("lieuEvenement", formData.lieuEvenement);
+            data.append("descriptionEvenement", formData.descriptionEvenement);// les champs en JSON texte
             if (image) data.append("image", image); // l'image
 
             const res = await fetch(`${import.meta.env.VITE_API_URL}/api/evenements/upload`, {

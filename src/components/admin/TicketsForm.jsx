@@ -6,6 +6,7 @@ export default function TicketsForm() {
         typeTicket: '',
         prixTicket: '',
         stock: '',
+        capacite: '',
     });
     const [imageFile, setImageFile] = useState(null);
     const [imagePreview, setImagePreview] = useState('');
@@ -30,6 +31,7 @@ export default function TicketsForm() {
                         typeTicket: data.typeTicket,
                         prixTicket: data.prixTicket,
                         stock: data.stock,
+                        capacite: data.capacite,
                     });
                     if (data.imageTicket) {
                         setImagePreview(`${import.meta.env.VITE_API_URL}${data.imageTicket}`);
@@ -70,14 +72,23 @@ export default function TicketsForm() {
         }
 
         const method = id ? 'PUT' : 'POST';
+
         const url = id
             ? `${import.meta.env.VITE_API_URL}/api/tickets/${id}`
             : `${import.meta.env.VITE_API_URL}/api/tickets`;
+
+        const capacite = parseInt(form.capacite);
+
+        if (!form.typeTicket || isNaN(prix) || isNaN(stock) || isNaN(capacite)) {
+            setError("Veuillez remplir tous les champs correctement.");
+            return;
+        }
 
         const ticketPayload = {
             ...form,
             prixTicket: prix,
             stock: stock,
+            capacite: capacite,
         };
 
         const formData = new FormData();
@@ -85,6 +96,7 @@ export default function TicketsForm() {
         if (imageFile) {
             formData.append('image', imageFile);
         }
+
 
         fetch(url, {
             method,
@@ -138,7 +150,16 @@ export default function TicketsForm() {
                 className="w-full border rounded px-3 py-2 mb-4"
                 required
             />
-
+            <label htmlFor="capacite" className="block mb-2">Capacité (nombre de personnes)</label>
+            <input
+                id="capacite"
+                type="number"
+                name="capacite"
+                value={form.capacite}
+                onChange={handleChange}
+                className="w-full border rounded px-3 py-2 mb-4"
+                required
+            />
             <label htmlFor="image" className="block mb-2">Image</label>
             {imagePreview && (
                 <img

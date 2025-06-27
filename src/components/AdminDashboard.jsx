@@ -35,6 +35,12 @@ export default function AdminDashboard() {
                 >
                     <span className="text-xl font-semibold">Gestion Commandes</span>
                 </button>
+                <button
+                    onClick={() => navigate('/admin/tickets-vendus')}
+                    className="bg-white text-black border border-gray-300 rounded-lg p-6 hover:bg-[#f0e7d8] transition text-left"
+                >
+                    <span className="text-xl font-semibold">Tickets Vendus</span>
+                </button>
             </div>
 
             {/* Stats & Events */}

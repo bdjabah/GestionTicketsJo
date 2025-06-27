@@ -18,6 +18,7 @@ import EvenementForm from './components/admin/EvenementForm.jsx';
 import TicketsList from './components/admin/TicketsList.jsx';
 import TicketsForm from './components/admin/TicketsForm.jsx';
 import ConfirmationPay from './components/ConfirmationPay.jsx';
+import TicketsVendus from './components/admin/TicketsVendusList.jsx';
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
             <Route path="/inscription" element={<Inscription />} />
             <Route path="/paiement" element={<Paiement />} />
             <Route path="/moncompte" element={<UserAccount />} />
+            <Route path="/confirmationPay" element={<ConfirmationPay />} />
             <Route path="/admin" element={<AdminRoute>
               <AdminDashboard />
             </AdminRoute>} />
@@ -78,7 +80,11 @@ function App() {
                 <TicketsForm />
               </AdminRoute>
             } />
-            <Route path="/confirmationPay" element={<ConfirmationPay />} />
+            <Route path="/admin/tickets-vendus" element={
+              <AdminRoute>
+                <TicketsVendus />
+              </AdminRoute>
+            } />
           </Routes>
 
         </main>

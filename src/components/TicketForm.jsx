@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { usePanier } from '../context/PanierContext';
 import { useTicketEdit } from '../context/TicketEditContext';
@@ -24,23 +24,47 @@ export default function TicketForm() {
             }))
     );
 
+    const [catalogue, setCatalogue] = useState([]);
     const [error, setError] = useState('');
     const [confirmation, setConfirmation] = useState(null);
 
-    // Gère les changements de champs
+    const totalPersons = panier.reduce((acc, item) => {
+        const nbPeople = countMap[item.type?.toLowerCase()] || 1;
+        return acc + nbPeople;
+    }, 0);
+
+    // 🔁 Chargement du catalogue depuis le backend
+    useEffect(() => {
+        async function fetchCatalogue() {
+            try {
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/api/tickets`);
+                const data = await response.json();
+
+                console.log("📦 Catalogue reçu :", data); // 🪵 Debug
+                setCatalogue(data);
+            } catch (error) {
+                console.error("❌ Erreur de chargement du catalogue :", error);
+                setError("Échec du chargement du catalogue. Veuillez réessayer.");
+            }
+        }
+
+        fetchCatalogue();
+    }, []);
+
     const handleChange = (index, field, value) => {
         const updated = [...forms];
         updated[index][field] = value;
         setForms(updated);
     };
 
-    // Validation
     const isFormValid = (form) =>
         form.civilite && form.prenom && form.nom && form.email && form.telephone;
 
-    // Soumission
+    // ✅ MISE À JOUR CORRECTE DU SUBMIT
     const handleSubmit = (e) => {
         e.preventDefault();
+        console.log("👉 Soumission en cours...");
+
         const allValid = forms.every(isFormValid);
 
         if (!allValid) {
@@ -50,15 +74,36 @@ export default function TicketForm() {
 
         setError('');
 
+        const matchingCatalogue = catalogue.find(
+            (c) => (c?.typeTicket || "").toLowerCase() === type.toLowerCase()
+        );
+
+        if (!matchingCatalogue) {
+            setError("Catalogue introuvable pour ce type de ticket.");
+            console.warn("⚠️ Catalogue non trouvé pour :", type);
+            return;
+        }
+
         if (ticketToEdit && editIndex !== null) {
             const updatedPanier = [...panier];
-            updatedPanier[editIndex] = { ...forms[0], type };
+            updatedPanier[editIndex] = {
+                ...forms[0],
+                type,
+                ticketCatalogue: matchingCatalogue,
+            };
             setPanier(updatedPanier);
             setTicketToEdit(null);
             setEditIndex(null);
             navigate('/panier');
         } else {
-            const completedForms = forms.map((form) => ({ ...form, type }));
+            const completedForms = forms.map((form) => ({
+                ...form,
+                type,
+                ticketCatalogue: matchingCatalogue,
+                quantite: countMap[type] || 1,
+            }));
+
+            console.log("🎟️ Tickets ajoutés :", completedForms);
             addToPanier(completedForms);
             setConfirmation(completedForms);
         }
@@ -190,11 +235,15 @@ export default function TicketForm() {
                         <div key={i} className="mb-2 border-b border-black pb-2">
                             🎟️ <strong>{ticket.civilite} {ticket.prenom} {ticket.nom}</strong><br />
                             📧 {ticket.email} <br /> 📱 {ticket.telephone}<br />
+
                         </div>
                     ))}
+                    <div className="mt-6 text-center font-semibold text-lg text-gray-700">
+                        👥 Nombre total de participants : {totalPersons}
+                    </div>
+
 
                     <div className="text-center mt-6 flex justify-center gap-4">
-
                         <button
                             onClick={handleReturnToShop}
                             className="bg-[#d9c275] text-white px-6 py-2 rounded hover:opacity-90"

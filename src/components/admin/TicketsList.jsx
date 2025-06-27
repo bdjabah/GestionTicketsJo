@@ -49,7 +49,7 @@ export default function TicketsList() {
             id: ticket.idTicket,
             type: ticket.typeTicket,
             prix: ticket.prixTicket,
-            image: ticket.imageTicket ? `${import.meta.env.VITE_API_URL}/uploads/${ticket.imageTicket}` : null,
+            image: ticket.imageTicket ? `${import.meta.env.VITE_API_URL}${ticket.imageTicket}` : null,
             stock: ticket.stock,
             statut: ticket.statutTicket
         };
@@ -104,7 +104,9 @@ export default function TicketsList() {
                             <h3 className="text-xl font-bold text-gray-800 mb-2">{ticket.typeTicket}</h3>
                             <p><strong>Prix :</strong> {ticket.prixTicket}€</p>
                             <p><strong>Quantité en stock :</strong> {ticket.stock}</p>
+                            <p><strong>Capacité :</strong> {ticket.capacite}</p>
                             <p><strong>Statut :</strong> {ticket.statutTicket}</p>
+
                         </div>
 
                         {/* Actions */}
